@@ -1,0 +1,20 @@
+name: Notes
+main: pw.zeth.ra.notes.Main
+version: 1.0
+api-version: 1.13
+commands:
+   note:
+      usage: /note <username> <note>
+      description: notes a user
+      permission: notes.note
+      permission-message: You don't have permission to do that
+   notes:
+      usage: /notes <username>
+      description: display a users notes
+      permission: notes.viewnotes
+      permission-message: You don't have permission to do that
+   delnote:
+      usage: /delnote <username> <noteid>
+      description: delete a users notes
+      permission: notes.delnote
+      permission-message: You don't have permission to do that
