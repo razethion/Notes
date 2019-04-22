@@ -1,19 +1,22 @@
 package pw.zeth.ra.notes.commands;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 
 import net.md_5.bungee.api.ChatColor;
 import pw.zeth.ra.notes.Main;
 
-public class Delnote implements CommandExecutor {
+public class Note implements CommandExecutor, Listener {
+
 	Main plugin;
 
-	public Delnote(Main instance) {
+	public Note(Main instance) {
 		plugin = instance;
 	}
 
@@ -33,38 +36,44 @@ public class Delnote implements CommandExecutor {
 
 		} else if (args.length == 1) {
 
-			player.sendMessage(ChatColor.RED + "Please specify the date/time format of the note to remove.");
+			player.sendMessage(ChatColor.RED + "I think you forgot an S. You can't create a blank note.");
 			return true;
 
 		} else if (args.length >= 2) {
 
 			String notee = args[0];
-			String time = args[1];
+
+			StringBuilder builder = new StringBuilder();
+			for(int i = 1; i < args.length; i++) {
+				builder.append(args[i] + " ");
+			}
+			String notemsg = builder.toString();
+
+			Date now = new Date();
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy-hhmmss");
 
 			@SuppressWarnings("deprecation")
 			String uuid = Bukkit.getOfflinePlayer(notee).getUniqueId().toString();
 
-			if (plugin.getConfig().isSet("notes." + uuid + "." + time)) {
-				plugin.getConfig().set("notes." + uuid + "." + time + ".deleted", "1");
-				plugin.getConfig().set("notes." + uuid + "." + time + ".deleted-by", player.getName().toString());
-				plugin.saveConfig();
+			plugin.getConfig().set("notes." + uuid + "." + format.format(now), "Note time");
+			plugin.getConfig().set("notes." + uuid + "." + format.format(now) + ".ign", notee);
+			plugin.getConfig().set("notes." + uuid + "." + format.format(now) + ".noter", player.getName().toString());
+			plugin.getConfig().set("notes." + uuid + "." + format.format(now) + ".note", notemsg);
+			plugin.saveConfig();
 
-				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-				String command1 = "a &c" + player.toString() + "&7has deleted the note for &c" + notee + " &7set at &c" + time;
-				Bukkit.dispatchCommand(console, command1);
+			for(Player p : Bukkit.getOnlinePlayers()){
 
-				player.sendMessage(ChatColor.GRAY + "Deleted note for " + ChatColor.RED + notee + ChatColor.GRAY + " at " + ChatColor.RED + time);
-				return true;
+				if(p.hasPermission("notes.note")){
+					p.sendMessage(ChatColor.RED + sender.getName().toString() + ChatColor.GRAY + " has noted " + ChatColor.RED + notee + ChatColor.GRAY + " for " + ChatColor.RED + notemsg);
+				}
 
-			} else {
-				player.sendMessage(ChatColor.RED + "Could not find that note.");
-				return true;
-			}
+			} 
+
+			return true;
 
 		}
 
 		return true;
-
 	}
 
 }
