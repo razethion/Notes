@@ -19,37 +19,41 @@ public class Main extends JavaPlugin {
 		final FileConfiguration config = this.getConfig();
 
 		Date datenow = new Date();
-		SimpleDateFormat dateformat = new SimpleDateFormat("ddMMyyyyhhmmss");
-
-		config.addDefault("notes", "");
+		SimpleDateFormat dateformat = new SimpleDateFormat("MMddyyyyhhmmss");
 
 		config.options().copyDefaults(true);
 		saveConfig();
 
-		for (String uuid : this.getConfig().getConfigurationSection("notes").getKeys(false)) {
-			for (String notedate : this.getConfig().getConfigurationSection("notes." + uuid).getKeys(false)) {
+		String defaultconfigcheck = this.getConfig().getString("notes");
+		if (defaultconfigcheck.indexOf("none") >=0) {
+			System.out.println("Skipping note date check");
+		} else {
 
-				if (!this.getConfig().isSet("notes." + uuid + "." +  notedate + ".old")) {
+			for (String uuid : this.getConfig().getConfigurationSection("notes").getKeys(false)) {
+				for (String notedate : this.getConfig().getConfigurationSection("notes." + uuid).getKeys(false)) {
 
-					String notedate1 = notedate.replace("/", "");
-					String notedate2 = notedate1.replace("-", "");
-					String cutnotedate = notedate2.replace(":", "");
-					BigInteger finalnotedate = new BigInteger(cutnotedate);
-					BigInteger firstcurrentdate = new BigInteger(dateformat.format(datenow));
-					BigInteger modifierdate = new BigInteger("30000000000");
-					BigInteger finaldate = finalnotedate.add(modifierdate);
-					int dateres = finaldate.compareTo(firstcurrentdate);
+					if (!this.getConfig().isSet("notes." + uuid + "." +  notedate + ".old")) {
 
-					if (dateres == 0) {
+						String notedate1 = notedate.replace("/", "");
+						String notedate2 = notedate1.replace("-", "");
+						String cutnotedate = notedate2.replace(":", "");
+						BigInteger finalnotedate = new BigInteger(cutnotedate);
+						BigInteger firstcurrentdate = new BigInteger(dateformat.format(datenow));
+						BigInteger modifierdate = new BigInteger("3000000000000");
+						BigInteger finaldate = finalnotedate.add(modifierdate);
+						int dateres = finaldate.compareTo(firstcurrentdate);
 
-						System.out.println("[Notes] Marking note as old: " + uuid + " - " + notedate);
-						this.getConfig().set("notes." + uuid + "." + notedate + ".old", "1");
+						if (dateres == 0) {
 
-					} else if (dateres == -1) {
+							System.out.println("[Notes] Marking note as old: " + uuid + " - " + notedate);
+							this.getConfig().set("notes." + uuid + "." + notedate + ".old", "1");
 
-						System.out.println("[Notes] Marking note as old: " + uuid + " - " + notedate);
-						this.getConfig().set("notes." + uuid + "." + notedate + ".old", "1");
+						} else if (dateres == -1) {
 
+							System.out.println("[Notes] Marking note as old: " + uuid + " - " + notedate);
+							this.getConfig().set("notes." + uuid + "." + notedate + ".old", "1");
+
+						}
 					}
 				}
 			}
@@ -68,7 +72,7 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-
+		saveConfig();
 	}
 
 }
