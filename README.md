@@ -2,11 +2,11 @@
 Spigot plugin that allows you to create notes for users, based on UUID.
 
 # Functions
--Stores notes for a player into Notes/config.yml based on user's UUID
--Hides notes marked as deleted/old when performed, never deletes them for recoverability
--Auto-hides 3m old notes
--Allows you to click and delete a note in the /notes list
--And more!
+Stores notes for a player into Notes/config.yml based on user's UUID
+Hides notes marked as deleted/old when performed, never deletes them for recoverability
+Auto-hides 3m old notes
+Allows you to click and delete a note in the /notes list
+And more!
 
 # Permissions
 notes.note - Create a note for a user and see when somebody adds/deletes a note
