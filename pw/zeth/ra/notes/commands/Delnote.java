@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
@@ -49,11 +48,14 @@ public class Delnote implements CommandExecutor {
 				plugin.getConfig().set("notes." + uuid + "." + time + ".deleted-by", player.getName().toString());
 				plugin.saveConfig();
 
-				ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
-				String command1 = "a &c" + player.toString() + "&7has deleted the note for &c" + notee + " &7set at &c" + time;
-				Bukkit.dispatchCommand(console, command1);
+				for(Player p : Bukkit.getOnlinePlayers()){
 
-				player.sendMessage(ChatColor.GRAY + "Deleted note for " + ChatColor.RED + notee + ChatColor.GRAY + " at " + ChatColor.RED + time);
+					if(p.hasPermission("notes.note")){
+						p.sendMessage(ChatColor.RED + sender.getName().toString() + ChatColor.GRAY + " has deleted the note for " + ChatColor.RED + notee + ChatColor.GRAY + " set at " + ChatColor.RED + time);
+					}
+
+				}
+
 				return true;
 
 			} else {
